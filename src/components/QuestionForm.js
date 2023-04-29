@@ -1,93 +1,51 @@
-import React, { useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 
-function QuestionForm(props) {
-  const [formData, setFormData] = useState({
-    prompt: "",
-    answer1: "",
-    answer2: "",
-    answer3: "",
-    answer4: "",
-    correctIndex: 0,
-  });
+function QuestionItem({ question, onDelete, onUpdate }) {
+  const { id, prompt, answers, correctIndex } = question;
 
-  function handleChange(event) {
-    setFormData({
-      ...formData,
-      [event.target.name]: event.target.value,
-    });
+  const options = answers.map((answer, index) => (
+    <option key={index} value={index}>
+      {answer}
+    </option>
+  ));
+
+  function handleDelete() {
+    onDelete(id);
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    console.log(formData);
+  function handleChange(event) {
+    const updatedQuestion = {
+      ...question,
+      correctIndex: parseInt(event.target.value),
+    };
+    onUpdate(updatedQuestion);
   }
 
   return (
-    <section>
-      <h1>New Question</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Prompt:
-          <input
-            type="text"
-            name="prompt"
-            value={formData.prompt}
-            onChange={handleChange}
-          />
-        </label>
-        <label>
-          Answer 1:
-          <input
-            type="text"
-            name="answer1"
-            value={formData.answer1}
-            onChange={handleChange}
-          />
-        </label>
-        <label>
-          Answer 2:
-          <input
-            type="text"
-            name="answer2"
-            value={formData.answer2}
-            onChange={handleChange}
-          />
-        </label>
-        <label>
-          Answer 3:
-          <input
-            type="text"
-            name="answer3"
-            value={formData.answer3}
-            onChange={handleChange}
-          />
-        </label>
-        <label>
-          Answer 4:
-          <input
-            type="text"
-            name="answer4"
-            value={formData.answer4}
-            onChange={handleChange}
-          />
-        </label>
-        <label>
-          Correct Answer:
-          <select
-            name="correctIndex"
-            value={formData.correctIndex}
-            onChange={handleChange}
-          >
-            <option value="0">{formData.answer1}</option>
-            <option value="1">{formData.answer2}</option>
-            <option value="2">{formData.answer3}</option>
-            <option value="3">{formData.answer4}</option>
-          </select>
-        </label>
-        <button type="submit">Add Question</button>
-      </form>
-    </section>
+    <li>
+      <h4>Question {id}</h4>
+      <h5>Prompt: {prompt}</h5>
+      <label>
+        Correct Answer:
+        <select defaultValue={correctIndex} onChange={handleChange}>
+          {options}
+        </select>
+      </label>
+      <button onClick={handleDelete}>Delete Question</button>
+    </li>
   );
 }
 
-export default QuestionForm;
+QuestionItem.propTypes = {
+  question: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    prompt: PropTypes.string.isRequired,
+    answers: PropTypes.arrayOf(PropTypes.string).isRequired,
+    correctIndex: PropTypes.number.isRequired,
+  }).isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onUpdate: PropTypes.func.isRequired,
+};
+
+export default QuestionItem;
