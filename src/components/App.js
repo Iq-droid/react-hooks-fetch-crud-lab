@@ -1,32 +1,41 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Header from "./Header";
-import AdminNavBar from "./AdminNavBar";
-import QuestionForm from "./QuestionForm";
+
 import QuestionList from "./QuestionList";
+import NewQuestionForm from "./NewQuestionForm";
 
 function App() {
-  const [page, setPage] = useState("List");
+
   const [questions, setQuestions] = useState([]);
 
-  useEffect(() => {
-    fetch("https://my-quiz-app.com/questions")
-      .then((response) => response.json())
-      .then((data) => setQuestions(data.questions))
-      .catch((error) => console.error(error));
-  }, []);
+  function handleAddQuestion(newQuestion) {
+    setQuestions([...questions, newQuestion]);
+  }
 
-  function handleDelete(questionId) {
-    setQuestions(questions.filter((question) => question.id !== questionId));
+  function handleDeleteQuestion(id) {
+    setQuestions(questions.filter((question) => question.id !== id));
+  }
+
+  function handleUpdateQuestion(updatedQuestion) {
+    const updatedQuestions = questions.map((question) => {
+      if (question.id === updatedQuestion.id) {
+        return updatedQuestion;
+      }
+      return question;
+    });
+    setQuestions(updatedQuestions);
   }
 
   return (
-    <>
+    <div>
       <Header />
-      <main>
-        <AdminNavBar onChangePage={setPage} />
-        {page === "Form" ? <QuestionForm /> : <QuestionList questions={questions} onDelete={handleDelete} />}
-      </main>
-    </>
+      <QuestionList
+        questions={questions}
+        onDeleteQuestion={handleDeleteQuestion}
+        onUpdateQuestion={handleUpdateQuestion}
+      />
+      <NewQuestionForm onAddQuestion={handleAddQuestion} />
+    </div>
   );
 }
 

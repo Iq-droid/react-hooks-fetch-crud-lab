@@ -2,13 +2,26 @@ import React from "react";
 import PropTypes from "prop-types";
 import QuestionItem from "./QuestionItem";
 
-function QuestionList({ questions, onDeleteQuestion }) {
+function QuestionList({ questions, onDeleteQuestion, onUpdateQuestion }) {
+  function handleDelete(id) {
+    onDeleteQuestion(id);
+  }
+
+  function handleUpdate(updatedQuestion) {
+    onUpdateQuestion(updatedQuestion);
+  }
+
   return (
     <section>
       <h1>Quiz Questions</h1>
       <ul>
         {questions.map((question) => (
-          <QuestionItem key={question.id} question={question} onDelete={onDeleteQuestion} />
+          <QuestionItem
+            key={question.id}
+            question={question}
+            onDelete={handleDelete}
+            onUpdate={handleUpdate}
+          />
         ))}
       </ul>
     </section>
@@ -25,6 +38,7 @@ QuestionList.propTypes = {
     })
   ).isRequired,
   onDeleteQuestion: PropTypes.func.isRequired,
+  onUpdateQuestion: PropTypes.func.isRequired,
 };
 
 export default QuestionList;
